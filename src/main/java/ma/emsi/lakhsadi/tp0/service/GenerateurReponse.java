@@ -1,32 +1,42 @@
 package ma.emsi.lakhsadi.tp0.service;
+
 import jakarta.enterprise.context.Dependent;
 
 import java.io.Serializable;
 import java.util.Locale;
 
 /**
- * Classe de service pour les modificateurs de question.
- * Un modificateur de question prend en entrée une question et retourne
- * la question modifiée.
+ * Service d'analyse de texte : mots, caractères et voyelles.
  */
-@Dependent // Portée CDI pour rendre la classe injectable par CDI dans les autres classes.
-// Portée Dependent : l'instance sera supprimée quand la classe qui l'a injectée sera supprimée.
-public class GenerateurReponse implements Serializable { // Serializable car CDI peut mettre l'instance en mémoire secondaire.
+@Dependent
+public class GenerateurReponse implements Serializable {
+
     /**
-     * Génère une réponse à une question.
-     * @param question La question à modifier.
-     * @param roleSysteme Le rôle système à utiliser pour la modification de la question.
-     * @return La question modifiée : le rôle système en majuscule au début de la question, s'il n'est pas null,
-     * suivi d'un saut de ligne,
-     * puis la question en minuscule, le tout entouré de "||".
+     * Analyse le texte fourni.
+     * Le rôle sytème n'est pas utilisé pour ce traitement personnel.
      */
     public String genererReponse(String question, String roleSysteme) {
-        String resultat = "||";
-        if (roleSysteme != null) {
-            // Ajouter le rôle système en majuscule au début du résultat, suivi d'un saut de ligne.
-            resultat += roleSysteme.toUpperCase(Locale.FRENCH) + "\n";
+        String texte = question.strip();
+
+        int nombreMots = texte.isEmpty()
+                ? 0
+                : texte.split("\\s+").length;
+
+        int nombreCaracteres = question.length();
+        int nombreVoyelles = 0;
+
+        String voyelles = "aeiouyàâäéèêëîïôöùûüÿœ";
+
+        for (char caractere : question.toLowerCase(Locale.FRENCH).toCharArray()) {
+            if (voyelles.indexOf(caractere) >= 0) {
+                nombreVoyelles++;
+            }
         }
-        resultat += question.toLowerCase(Locale.FRENCH) + "||";
-        return resultat;
+
+        return "Analyse du texte :\n"
+                + "Mots : " + nombreMots + "\n"
+                + "Caractères (espaces compris) : " + nombreCaracteres + "\n"
+                + "Voyelles (y et voyelles accentuées inclus) : "
+                + nombreVoyelles;
     }
 }
